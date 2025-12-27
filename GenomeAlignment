@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -A bharpur
+#SBATCH -A xxx
 #SBATCH -p cpu
 #SBATCH --job-name=RNAseqVC
 #SBATCH --nodes=1
