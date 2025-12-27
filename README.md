@@ -5,11 +5,11 @@ GenomeAlignment is a SLURM-based RNA-seq alignment and variant calling pipeline 
 The workflow is automated to process multiple sequencing runs and samples with minimal manual intervention.
 # Pipeline Workflow
 For each RNA-seq sample, the pipeline performs:
-# Genome Alignment
+## Genome Alignment
 Aligns reads to a reference genome using STAR and produces coordinate-sorted BAM files with gene-level read counts.
-# RNA-seq BAM Processing
+## RNA-seq BAM Processing
 Uses GATK SplitNCigarReads to properly handle spliced alignments prior to variant calling.
-# Variant Calling
+## Variant Calling
 Calls SNPs and indels using bcftools mpileup and bcftools call, producing compressed and indexed VCF files.
 # Requirements
 ## System
@@ -25,7 +25,7 @@ Each Run* directory is processed automatically
 FASTQ files must be pre-trimmed (e.g., using fastp)
 Single-end reads are assumed
 Reference Genome and Index
-# Update the following paths in the script if needed:
+## Update the following paths in the script if needed:
 REF=/scratch/bell/mfikere/RNAseq/ref/Amel_HAv3.1_genomic.fna
 STAR_INDEX=/depot/bharpur/data/projects/fikere/RNAseq/AMEL_STAR_INDEX
 PARENT=/scratch/bell/mfikere/RNAseq
@@ -37,17 +37,17 @@ The pipeline will:
 Loop through all Run* directories
 Process all *_trimmed.fastq.gz files
 Skip samples where a .vcf.gz already exists
-# Output Files
+## Output Files
 For each sample, the pipeline generates:
 *_Aligned.sortedByCoord.out.bam — aligned reads
 *.split.bam — RNA-seq processed BAM
 *.vcf.gz — variant calls
 *.vcf.gz.tbi — VCF index
-# STAR gene count files
+## STAR gene count files
 SLURM log files:
 pipeline.out
 pipeline.err
-# Notes
+## Notes
 Input FASTQ files must be trimmed before running the pipeline
 Variant calls are unfiltered; downstream filtering is recommended
 Designed for RNA-seq variant discovery, not DNA-seq
