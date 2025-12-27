@@ -20,19 +20,7 @@ STAR 2.7.11b
 samtools 1.22.1
 bcftools 1.17
 GATK 4.6.0.0
-biocontainers
-# Directory Structure
-RNAseq/
-├── Run1/
-│   └── trimmed_fastp/
-│       ├── sample1_trimmed.fastq.gz
-│       ├── sample2_trimmed.fastq.gz
-│       └── ...
-├── Run2/
-│   └── trimmed_fastp/
-│       └── ...
-└── ref/
-    └── Amel_HAv3.1_genomic.fna
+
 Each Run* directory is processed automatically
 FASTQ files must be pre-trimmed (e.g., using fastp)
 Single-end reads are assumed
