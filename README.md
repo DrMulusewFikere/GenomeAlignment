@@ -25,10 +25,6 @@ Each Run* directory is processed automatically
 FASTQ files must be pre-trimmed (e.g., using fastp)
 Single-end reads are assumed
 Reference Genome and Index
-## Update the following paths in the script if needed:
-REF=/scratch/bell/mfikere/RNAseq/ref/Amel_HAv3.1_genomic.fna
-STAR_INDEX=/depot/bharpur/data/projects/fikere/RNAseq/AMEL_STAR_INDEX
-PARENT=/scratch/bell/mfikere/RNAseq
 The STAR genome index must be generated before running the pipeline.
 # Running the Pipeline
 ## Submit the job using SLURM:
