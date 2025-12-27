@@ -1,0 +1,84 @@
+#!/bin/bash
+#SBATCH -A bharpur
+#SBATCH -p cpu
+#SBATCH --job-name=RNAseqVC
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=120G
+#SBATCH --time=200:00:00
+#SBATCH --output=pipeline.out
+#SBATCH --error=pipeline.err
+
+module load biocontainers
+module load star/2.7.11b
+module load samtools/1.22.1
+module load bcftools/1.17
+module load gatk4/4.6.0.0
+
+REF=Amel_HAv3.1_genomic.fna
+STAR_INDEX= AMEL_STAR_INDEX
+PARENT=RNAseq
+
+echo "===== Starting Pipeline $(date) ====="
+
+for RUN in ${PARENT}/Run*; do
+    [ -d "$RUN" ] || continue
+    TRIM="$RUN/trimmed_fastp"
+
+    echo ">>> Processing $(basename $RUN)"
+
+    cd "$TRIM" || continue
+
+    for fq in *_trimmed.fastq.gz; do
+        sample=${fq%_trimmed.fastq.gz}
+
+        echo "--- Sample: $sample ---"
+
+        # Skip if VCF already exists
+        if [ -f ${sample}.vcf.gz ]; then
+            echo "VCF exists — skipping"
+            continue
+        fi
+
+        ######################################################################
+        # 1. Alignment
+        ######################################################################
+        STAR \
+            --runThreadN 16 \
+            --genomeDir $STAR_INDEX \
+            --readFilesIn $fq \
+            --readFilesCommand zcat \
+            --outFileNamePrefix ${sample}_ \
+            --outSAMtype BAM SortedByCoordinate \
+            --quantMode GeneCounts
+
+        BAM=${sample}_Aligned.sortedByCoord.out.bam
+
+        samtools index $BAM
+
+        ######################################################################
+        # 2. SplitNCigarReads
+        ######################################################################
+        gatk SplitNCigarReads \
+            -R $REF \
+            -I $BAM \
+            -O ${sample}.split.bam
+
+        samtools index ${sample}.split.bam
+
+        ######################################################################
+        # 3. Variant calling
+        ######################################################################
+        bcftools mpileup -Ou -f $REF ${sample}.split.bam | \
+        bcftools call -mv -Oz -o ${sample}.vcf.gz
+
+        bcftools index ${sample}.vcf.gz
+
+        echo "--- Done $sample ---"
+        echo
+    done
+
+    echo ">>> Completed $(basename $RUN)"
+done
+
+echo "===== Pipeline FINISHED $(date) ====="
